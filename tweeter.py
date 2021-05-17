@@ -57,7 +57,7 @@ if __name__ == "__main__":
         model_data[model.name()] = data
 
         text = f"I analyzed the sentiment on Twitter for each state + DC from the last week using a {model_type}."
-        text += f"\nWhich state had the most positive mentions this week? The Answer is: {top_state}!"
+        text += f"\nWhich state had the most positive mentions this week? It was {top_state}!"
         text += f"\n#NLP #Python #GrantBot"
         model_tweet_content[model.name()] = text
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     top_state = "#"+top_state.replace(" ", "")
 
     print("Creating Initial Tweet")
-    text = f"Which state had the most positive mentions this week? The Answer is: {top_state}!"
+    text = f"Which state had the most positive mentions this week? It was {top_state}!"
     text += "\nThis was based on a composite model I created which analyzed 50,000+ Tweets. In the replies are a few of the raw models."
     text += "\nGitHub: https://github.com/ghadlich/StateSentiment"
     text += "\n#NLP #Python"
