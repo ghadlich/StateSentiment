@@ -150,7 +150,7 @@ def pull_tweets(date, num_tweets=10):
 
     os.makedirs(dir)
 
-    for state in tqdm(state_file_list, total=len(state_file_list), position=0, leave=True):
+    for state in state_file_list:
         output_file = os.path.join(dir, state_file_list[state])
         if (state == "District of Columbia"):
             recent_search_query(f"-is:retweet lang:en Washington DC", 
@@ -200,12 +200,13 @@ def parse_tweets(model, dir):
         positive = 0
         negative = 0
 
-        # For Each Tweet, use English Language Tweets
-        for tweet in tqdm(tweets, total=len(tweets), position=0, leave=True):
-            if (tweet["lang"] != "en"):
-                continue
+        tweets = [tweet['text'].lower().replace(state.lower(), "[State_Name]") for tweet in tweets]
 
-            prediction, _ = model.predict(tweet['text'])
+        # For Each Tweet, use English Language Tweets
+        results = model.predict_batch(tweets)
+
+        for result in results:
+            prediction, _ = result
 
             if (prediction == "Positive"):
                 positive += 1
