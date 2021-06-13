@@ -33,6 +33,7 @@ from tabulate import tabulate
 from collections import defaultdict 
 from twitterutils.twitterutils import recent_search_query
 from tqdm.auto import tqdm
+import re
 
 state_file_list = {
     "Alabama" : "AL.txt",
@@ -42,6 +43,7 @@ state_file_list = {
     "California" : "CA.txt",
     "Colorado" : "CO.txt",
     "Connecticut" : "CT.txt",
+    "District of Columbia" : "DC.txt",
     "Delaware" : "DE.txt",
     "Florida" : "FL.txt",
     "Georgia" : "GA.txt",
@@ -63,7 +65,7 @@ state_file_list = {
     "Montana" : "MT.txt",
     "Nebraska" : "NE.txt",
     "Nevada" : "NV.txt",
-    "New Hampshire" : "NV.txt",
+    "New Hampshire" : "NH.txt",
     "New Jersey" : "NJ.txt",
     "New Mexico" : "NM.txt",
     "New York" : "NY.txt",
@@ -83,9 +85,8 @@ state_file_list = {
     "Virginia" : "VA.txt",
     "Washington" : "WA.txt",
     "West Virginia" : "WV.txt",
-    "Wisconsin" : "WA.txt",
+    "Wisconsin" : "WI.txt",
     "Wyoming" : "WY.txt",
-    "District of Columbia" : "DC.txt",
     }
 
 state_query = {
@@ -107,14 +108,14 @@ state_query = {
     "Kansas" : "Kansas",
     "Kentucky" : "Kentucky",
     "Louisiana" : "Louisiana",
-    "Maine" : "Maine",
+    "Maine" : "Maine -suna -kya -bola -socha -kuch -kalse -dekhna -mainedcm -Mendoza",
     "Maryland" : "Maryland",
     "Massachusetts" : "Massachusetts",
     "Michigan" : "Michigan",
     "Minnesota" : "Minnesota",
     "Mississippi" : "Mississippi",
     "Missouri" : "Missouri",
-    "Montana" : "Montana -Hannah -La",
+    "Montana" : "Montana -Hannah -La -Fouts",
     "Nebraska" : "Nebraska",
     "Nevada" : "Nevada",
     "New Hampshire" : "New Hampshire",
@@ -134,8 +135,8 @@ state_query = {
     "Texas" : "Texas",
     "Utah" : "Utah",
     "Vermont" : "Vermont",
-    "Virginia" : "Virginia",
-    "Washington" : "Washington",
+    "Virginia" : "Virginia -West",
+    "Washington" : "Washington -DC -George",
     "West Virginia" : "West Virginia",
     "Wisconsin" : "Wisconsin",
     "Wyoming" : "Wyoming",
@@ -153,14 +154,20 @@ def pull_tweets(date, num_tweets=10):
     for state in state_file_list:
         output_file = os.path.join(dir, state_file_list[state])
         if (state == "District of Columbia"):
-            recent_search_query(f"-is:retweet lang:en Washington DC", 
-                                output_file=output_file, 
-                                place=None, 
+            recent_search_query(f"-is:retweet lang:en Washington DC",
+                                output_file=output_file,
+                                place=None,
                                 max_results = num_tweets)
+        elif (state == "Maine"):
+            # Reduce Maine as it is difficult to query for
+            recent_search_query(f"-is:retweet lang:en {state_query[state]}",
+                                output_file=output_file,
+                                place=state,
+                                max_results = num_tweets/2)
         else:
-            recent_search_query(f"-is:retweet lang:en {state_query[state]}", 
-                                output_file=output_file, 
-                                place=state, 
+            recent_search_query(f"-is:retweet lang:en {state_query[state]}",
+                                output_file=output_file,
+                                place=state,
                                 max_results = num_tweets)
 
     return dir
@@ -200,7 +207,24 @@ def parse_tweets(model, dir):
         positive = 0
         negative = 0
 
-        tweets = [tweet['text'].lower().replace(state.lower(), "[State_Name]") for tweet in tweets]
+        tweets = [tweet['text'] for tweet in tweets]
+
+        # Remove Links
+        tweets = [re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|'\
+                    '(?:%[0-9a-fA-F][0-9a-fA-F]))+','', tweet) for tweet in tweets]
+
+        # Need to put this state first due to things like West Virgina
+        states_list = [state]
+        states_list += [st for st in state_file_list]
+        for st in states_list:
+            for i in range(len(tweets)):
+                # Remove State Names
+                patterns = [re.compile(st+"'s", re.IGNORECASE),
+                            re.compile(st+"s", re.IGNORECASE),
+                            re.compile(st, re.IGNORECASE)]
+
+                for pattern in patterns:
+                    tweets[i] = pattern.sub("[state]", tweets[i])
 
         # For Each Tweet, use English Language Tweets
         results = model.predict_batch(tweets)
@@ -247,3 +271,162 @@ def create_composite(model_data):
             best_state = state
 
     return state_sentiment, best_state
+
+
+state_image_list = {
+    "Alabama" : "AL.png",
+    "Alaska" : "AK.png",
+    "Arizona" : "AZ.png",
+    "Arkansas" : "AR.png",
+    "California" : "CA.png",
+    "Colorado" : "CO.png",
+    "Connecticut" : "CT.png",
+    "Delaware" : "DE.png",
+    "Florida" : "FL.png",
+    "Georgia" : "GA.png",
+    "Hawaii" : "HI.png",
+    "Idaho" : "ID.png",
+    "Illinois" : "IL.png",
+    "Indiana" : "IN.png",
+    "Iowa" : "IA.png",
+    "Kansas" : "KS.png",
+    "Kentucky" : "KY.png",
+    "Louisiana" : "LA.png",
+    "Maine" : "ME.png",
+    "Maryland" : "MD.png",
+    "Massachusetts" : "MA.png",
+    "Michigan" : "MI.png",
+    "Minnesota" : "MN.png",
+    "Mississippi" : "MS.png",
+    "Missouri" : "MO.png",
+    "Montana" : "MT.png",
+    "Nebraska" : "NE.png",
+    "Nevada" : "NV.png",
+    "New Hampshire" : "NH.png",
+    "New Jersey" : "NJ.png",
+    "New Mexico" : "NM.png",
+    "New York" : "NY.png",
+    "North Carolina" : "NC.png",
+    "North Dakota" : "ND.png",
+    "Ohio" : "OH.png",
+    "Oklahoma" : "OK.png",
+    "Oregon" : "OR.png",
+    "Pennsylvania" : "PA.png",
+    "Rhode Island" : "RI.png",
+    "South Carolina" : "SC.png",
+    "South Dakota" : "SD.png",
+    "Tennessee" : "TN.png",
+    "Texas" : "TX.png",
+    "Utah" : "UT.png",
+    "Vermont" : "VT.png",
+    "Virginia" : "VA.png",
+    "Washington" : "WA.png",
+    "West Virginia" : "WV.png",
+    "Wisconsin" : "WI.png",
+    "Wyoming" : "WY.png",
+    "District of Columbia" : "DC.png",
+    }
+
+
+import numpy as np
+import pandas as pd
+from os import path
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+import matplotlib.pyplot as plt
+import re
+
+def transform_format(val):
+    if val[0] == 0:
+        return 255
+    else:
+        return val[0]
+
+def create_image(tweets, img_path, word_cloud_path, date, max_words=300):
+    mask = np.array(Image.open(img_path))
+
+    # Transform mask
+    transformed_mask = np.ndarray((mask.shape[0],mask.shape[1]), np.int32)
+
+    for i in range(len(mask)):
+        transformed_mask[i] = list(map(transform_format, mask[i]))
+
+    stopwords = set(STOPWORDS)
+    stopwords.update(["amp", "amps", "state", "m", "city", "u", "will", "s", "one", "states", "posted", "gt", "lt", "DC", "West"])
+    wordcloud = WordCloud(width=1125, height=625, max_words=max_words, stopwords=stopwords, normalize_plurals=False, background_color="white", mask=mask, contour_width=1, contour_color='black').generate(tweets)
+    plt.figure(figsize=(15, 8))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.title(f"© Grant Hadlich - {date}", loc='right')
+    plt.tight_layout()
+    plt.savefig(word_cloud_path)
+
+def create_word_clouds(date):
+
+    dir = "./raw_tweets/" + date
+    # Plots Sentiment Data per State
+    state_word_cloud = dict()
+
+    tweets_total = ""
+
+    # Cycle Through Each State
+    print("Creating a word cloud for each state")
+    for state in tqdm(state_image_list, total=len(state_image_list), position=0, leave=True):
+        tweets = read_tweets(dir + "/" + state_file_list[state])
+        img_path = f"./state_images/{state_image_list[state]}"
+        word_cloud_path = dir + "/" + state_image_list[state]
+        state_word_cloud[state] = word_cloud_path
+
+        tweets_cleaned = []
+        # Remove Any Nazi References
+        for tweet in tweets:
+            skip = False
+            if "entities" in tweet:
+                if "annotations" in tweet["entities"]:
+                    for annotation in tweet["entities"]["annotations"]:
+                        if annotation["normalized_text"] == "Nazis":
+                            skip = True
+
+            if not skip:
+                tweets_cleaned.append(tweet)
+
+        tweets = tweets_cleaned
+
+        for i in range(len(tweets)):
+            tweets[i] = tweets[i]['text']
+
+            # Remove Links
+            tweets[i] = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|'\
+                '(?:%[0-9a-fA-F][0-9a-fA-F]))+','', tweets[i])
+
+            # Remove a few unicode items
+            tweets[i] = tweets[i].replace(u"\u2019", "'").replace('\u2019', "'")
+
+        # Need to put this state first due to things like West Virgina
+        states_list = [state]
+        states_list += [st for st in state_image_list]
+        for st in states_list:
+            for i in range(len(tweets)):
+                # Remove State Names
+                patterns = [re.compile(st+"'s", re.IGNORECASE),
+                            re.compile(st+"s", re.IGNORECASE),
+                            re.compile(st, re.IGNORECASE)]
+
+                for pattern in patterns:
+                    tweets[i] = pattern.sub(" ", tweets[i])
+
+        tweets = " ".join(tweets)
+
+        tweets_total += " " + tweets
+
+        create_image(tweets, img_path, word_cloud_path, date)
+
+    # Now do USA
+    word_cloud_path = dir + "/" + "US.png"
+    img_path = f"./state_images/US.png"
+
+    state_word_cloud["USA"] = word_cloud_path
+
+    create_image(tweets_total, img_path, word_cloud_path, date, max_words=500)
+
+    return state_word_cloud

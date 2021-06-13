@@ -73,7 +73,7 @@ def plot_state_sentiment(state_list, model_name, date, directory):
         color_list[idx] = colors_map(int(state_list[state_name]*100))
 
     # Create Initial Plot
-    us_map = conus_clipped.plot(figsize=(12, 8), color=color_list)
+    us_map = conus_clipped.plot(figsize=(15, 8), color=color_list)
 
     norm = matplotlib.colors.Normalize(vmin=0, vmax=100)
 
@@ -87,6 +87,6 @@ def plot_state_sentiment(state_list, model_name, date, directory):
     fig.tight_layout()
     fig.colorbar(sm, shrink=0.75, label='Percent Positive')
 
-    fig.savefig(output_file, dpi=256)
+    fig.savefig(output_file)
 
     return output_file

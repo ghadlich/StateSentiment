@@ -67,8 +67,7 @@ if __name__ == "__main__":
     top_state = "#"+top_state.replace(" ", "")
 
     print("Creating Initial Tweet")
-    text = f"Which state had the most positive mentions this week? It was {top_state}!"
-    text += "\nThis was based on a composite model I created which analyzed 50,000+ Tweets. In the replies are a few of the raw models."
+    text = f"Each week I pull ~51000 tweets on US State mentions and do sentiment analysis. Most positive state was {top_state} according to a composite model! In the replies are the individual models."
     text += "\nGitHub: https://github.com/ghadlich/StateSentiment"
     text += "\n#NLP #Python"
     previous_id = tweet(text, image_path=filename, enable_tweet=True)
