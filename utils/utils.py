@@ -104,8 +104,8 @@ state_query = {
     "Idaho" : "Idaho",
     "Illinois" : "Illinois",
     "Indiana" : "Indiana -Jones",
-    "Iowa" : "Iowa",
-    "Kansas" : "Kansas",
+    "Iowa" : "Iowa -city",
+    "Kansas" : "Kansas -city",
     "Kentucky" : "Kentucky",
     "Louisiana" : "Louisiana",
     "Maine" : "Maine -suna -kya -bola -socha -kuch -kalse -dekhna -mainedcm -Mendoza",
@@ -115,13 +115,13 @@ state_query = {
     "Minnesota" : "Minnesota",
     "Mississippi" : "Mississippi",
     "Missouri" : "Missouri",
-    "Montana" : "Montana -Hannah -La -Fouts",
+    "Montana" : "Montana -Hannah -La -Fouts -French",
     "Nebraska" : "Nebraska",
     "Nevada" : "Nevada",
-    "New Hampshire" : "New Hampshire",
-    "New Jersey" : "New Jersey",
-    "New Mexico" : "New Mexico",
-    "New York" : "New York",
+    "New Hampshire" : "\"New Hampshire\"",
+    "New Jersey" : "\"New Jersey\"",
+    "New Mexico" : "\"New Mexico\"",
+    "New York" : "\"New York\"",
     "North Carolina" : "North Carolina",
     "North Dakota" : "North Dakota",
     "Ohio" : "Ohio",
@@ -136,7 +136,7 @@ state_query = {
     "Utah" : "Utah",
     "Vermont" : "Vermont",
     "Virginia" : "Virginia -West",
-    "Washington" : "Washington -DC -George",
+    "Washington" : "Washington -DC -George -Post -Nationals",
     "West Virginia" : "West Virginia",
     "Wisconsin" : "Wisconsin",
     "Wyoming" : "Wyoming",
@@ -158,8 +158,8 @@ def pull_tweets(date, num_tweets=10):
                                 output_file=output_file,
                                 place=None,
                                 max_results = num_tweets)
-        elif (state == "Maine"):
-            # Reduce Maine as it is difficult to query for
+        elif (state == "Nebraska") or (state == "Washington") or (state == "Maine") or (state == "New Jersey") or (state == "New York") or (state == "New Mexico") or (state == "Montana") or (state == "New Hampshire") or (state == "Colorado"):
+            # For these, force entity as results are noisy
             recent_search_query(f"-is:retweet lang:en {state_query[state]}",
                                 output_file=output_file,
                                 place=state,
@@ -167,7 +167,7 @@ def pull_tweets(date, num_tweets=10):
         else:
             recent_search_query(f"-is:retweet lang:en {state_query[state]}",
                                 output_file=output_file,
-                                place=state,
+                                place=None,
                                 max_results = num_tweets)
 
     return dir
@@ -352,12 +352,12 @@ def create_image(tweets, img_path, word_cloud_path, date, max_words=300):
         transformed_mask[i] = list(map(transform_format, mask[i]))
 
     stopwords = set(STOPWORDS)
-    stopwords.update(["amp", "amps", "state", "m", "city", "u", "will", "s", "one", "states", "posted", "gt", "lt", "DC", "West"])
+    stopwords.update(["amp", "amps", "state", "m", "city", "u", "will", "s", "one", "states", "posted", "gt", "lt", "DC", "West", "people", "go", "now", "time", "us", "many", "live", "know", "today", "see", "day", "ctztime"])
     wordcloud = WordCloud(width=1125, height=625, max_words=max_words, stopwords=stopwords, normalize_plurals=False, background_color="white", mask=mask, contour_width=1, contour_color='black').generate(tweets)
     plt.figure(figsize=(15, 8))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.title(f"© Grant Hadlich - {date}", loc='right')
+    #plt.title(f"© Grant Hadlich - {date}", loc='right')
     plt.tight_layout()
     plt.savefig(word_cloud_path)
 
@@ -414,12 +414,16 @@ def create_word_clouds(date):
 
                 for pattern in patterns:
                     tweets[i] = pattern.sub(" ", tweets[i])
+                    tweets[i] = tweets[i].replace("D.C.", "")
 
-        tweets = " ".join(tweets)
+        tweet_text = " ".join(tweets)
 
-        tweets_total += " " + tweets
+        for i in range(int(len(tweets) / 60)):
+            tweet_text += "Copyright_Grant_Hadlich_2021 the "
 
-        create_image(tweets, img_path, word_cloud_path, date)
+        tweets_total += " " + tweet_text
+
+        create_image(tweet_text, img_path, word_cloud_path, date)
 
     # Now do USA
     word_cloud_path = dir + "/" + "US.png"

@@ -29,8 +29,11 @@ from collections import defaultdict
 from tqdm.auto import tqdm
 
 if __name__ == "__main__":
+    #sleep(3600*11)
+
     now = datetime.now()
     date = now.strftime("%Y-%m-%d")
+    date = "2021-06-26"
 
     states = create_word_clouds(date)
 
@@ -39,5 +42,14 @@ if __name__ == "__main__":
 
     text = f"Each week I pull ~51000 tweets on US State mentions. Here's a collection of word clouds from tweets pulled on {date}. Each state + DC can be found in the replies!"
     text += f"\n#Python #USA #WordCloud #TwitterData"
+
+    previous_id = tweet(text, image_path=usa_img, enable_tweet=True)
+
+    for state in tqdm(states, total=len(states), position=0, leave=True):
+        clipped = state.replace(" ", "")
+        text = f"Each week I pull ~51000 tweets on US State mentions. Here's the word cloud for #{clipped} from tweets pulled on {date}!"
+        text += f"\n#Python #WordCloud #TwitterData"
+        previous_id = tweet(text, image_path=states[state], in_reply_to_status_id=previous_id, enable_tweet=True)
+        sleep(1)
 
     

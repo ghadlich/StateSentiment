@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
         text = f"I analyzed the sentiment on Twitter for each state + DC from the last week using a {model_type}."
         text += f"\nWhich state had the most positive mentions this week? It was {top_state}!"
-        text += f"\n#NLP #Python #GrantBot"
+        text += f"\n#NLP #Python #ML"
         model_tweet_content[model.name()] = text
 
     # Create Composite Model
@@ -67,9 +67,9 @@ if __name__ == "__main__":
     top_state = "#"+top_state.replace(" ", "")
 
     print("Creating Initial Tweet")
-    text = f"Each week I pull ~51000 tweets on US State mentions and do sentiment analysis. Most positive state was {top_state} according to a composite model! In the replies are the individual models."
+    text = f"Each week I pull ~51000 tweets on US State mentions and do sentiment analysis. Most positive state was {top_state} according to an ensemble model! In the replies are the individual models."
     text += "\nGitHub: https://github.com/ghadlich/StateSentiment"
-    text += "\n#NLP #Python"
+    text += "\n#NLP #Python #ML"
     previous_id = tweet(text, image_path=filename, enable_tweet=True)
 
     for model_name in model_tweet_content:
