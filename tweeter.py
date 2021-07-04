@@ -40,7 +40,7 @@ if __name__ == "__main__":
     print("Loaded Models: " + str([model.name() for model in models]))
 
     print("Pulling Tweets from Twitter")
-    directory = pull_tweets(date, 1000)
+    directory = pull_tweets(date, 500)
 
     model_data = dict()
     model_tweet_content = dict()

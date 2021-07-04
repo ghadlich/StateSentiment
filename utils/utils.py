@@ -158,16 +158,16 @@ def pull_tweets(date, num_tweets=10):
                                 output_file=output_file,
                                 place=None,
                                 max_results = num_tweets)
-        elif (state == "Nebraska") or (state == "Washington") or (state == "Maine") or (state == "New Jersey") or (state == "New York") or (state == "New Mexico") or (state == "Montana") or (state == "New Hampshire") or (state == "Colorado"):
-            # For these, force entity as results are noisy
-            recent_search_query(f"-is:retweet lang:en {state_query[state]}",
-                                output_file=output_file,
-                                place=state,
-                                max_results = num_tweets/2)
+        # elif (state == "Alaska") or (state == "Nebraska") or (state == "Washington") or (state == "Maine") or (state == "New Jersey") or (state == "New York") or (state == "New Mexico") or (state == "Montana") or (state == "New Hampshire") or (state == "Colorado") or (state == "Utah"):
+        #     # For these, force entity as results are noisy
+        #     recent_search_query(f"-is:retweet lang:en {state_query[state]}",
+        #                         output_file=output_file,
+        #                         place=state,
+        #                         max_results = num_tweets)
         else:
             recent_search_query(f"-is:retweet lang:en {state_query[state]}",
                                 output_file=output_file,
-                                place=None,
+                                place=state,
                                 max_results = num_tweets)
 
     return dir

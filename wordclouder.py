@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     now = datetime.now()
     date = now.strftime("%Y-%m-%d")
-    date = "2021-06-26"
+    date = "2021-07-03"
 
     states = create_word_clouds(date)
 
