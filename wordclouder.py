@@ -24,16 +24,15 @@
 from twitterutils.twitterutils import tweet
 from utils.utils import create_word_clouds
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import defaultdict
 from tqdm.auto import tqdm
 
 if __name__ == "__main__":
     #sleep(3600*11)
 
-    now = datetime.now()
+    now = datetime.now()-timedelta(days=1)
     date = now.strftime("%Y-%m-%d")
-    date = "2021-07-03"
 
     states = create_word_clouds(date)
 
