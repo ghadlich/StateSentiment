@@ -96,7 +96,7 @@ state_query = {
     "Arkansas" : "Arkansas",
     "California" : "California",
     "Colorado" : "Colorado",
-    "Connecticut" : "Connecticut -CTVibe101 -Download -Radio",
+    "Connecticut" : "Connecticut -CTVibe101 -Download -Radio -Job",
     "Delaware" : "Delaware",
     "Florida" : "Florida",
     "Georgia" : "Georgia",
@@ -121,7 +121,7 @@ state_query = {
     "New Hampshire" : "\"New Hampshire\"",
     "New Jersey" : "\"New Jersey\"",
     "New Mexico" : "\"New Mexico\"",
-    "New York" : "\"New York\" -jobs",
+    "New York" : "\"New York\" State -jobs",
     "North Carolina" : "North Carolina",
     "North Dakota" : "North Dakota -jobs",
     "Ohio" : "Ohio",
@@ -136,11 +136,11 @@ state_query = {
     "Utah" : "Utah",
     "Vermont" : "Vermont",
     "Virginia" : "Virginia -West -ZeE",
-    "Washington" : "Washington -DC -George -Post -Nationals",
+    "Washington" : "Washington State -DC -George -Post -Nationals -Capitol -Examiner",
     "West Virginia" : "West Virginia",
     "Wisconsin" : "Wisconsin",
     "Wyoming" : "Wyoming",
-    "District of Columbia" : "Washington DC",
+    "District of Columbia" : "Washington DC D C",
     }
 
 def pull_tweets(date, num_tweets=10):
@@ -352,7 +352,7 @@ def create_image(tweets, img_path, word_cloud_path, date, max_words=300):
         transformed_mask[i] = list(map(transform_format, mask[i]))
 
     stopwords = set(STOPWORDS)
-    stopwords.update(["nbsp", "amp", "amps", "state", "m", "city", "u", "will", "s", "one", "states", "posted", "gt", "lt", "DC", "West", "people", "go", "now", "time", "us", "many", "live", "know", "today", "see", "day", "ctztime"])
+    stopwords.update(["nbsp", "amp", "amps", "state", "m", "city", "u", "will", "s", "one", "states", "posted", "gt", "lt", "DC", "West", "people", "go", "now", "time", "us", "many", "live", "know", "today", "see", "day", "ctztime", "state"])
     wordcloud = WordCloud(width=1125, height=625, max_words=max_words, stopwords=stopwords, normalize_plurals=False, background_color="white", mask=mask, contour_width=1, contour_color='black').generate(tweets)
     plt.figure(figsize=(15, 8))
     plt.imshow(wordcloud, interpolation='bilinear')
