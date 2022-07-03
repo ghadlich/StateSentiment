@@ -40,7 +40,7 @@ if __name__ == "__main__":
     print("Loaded Models: " + str([model.name() for model in models]))
 
     print("Pulling Tweets from Twitter")
-    directory = pull_tweets(date, 500)
+    directory, tweets_pulled = pull_tweets(date, 4000)
 
     model_data = dict()
     model_tweet_content = dict()
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     top_state = "#"+top_state.replace(" ", "")
 
     print("Creating Initial Tweet")
-    text = f"Each week I pull ~51000 tweets on US State mentions and do sentiment analysis. Most positive state was {top_state} according to an ensemble model! In the replies are the individual models."
+    text = f"This week I pulled {tweets_pulled} tweets on US State mentions. Most positive state was {top_state} according to an ensemble model! In the replies are the individual models."
     text += "\nGitHub: https://github.com/ghadlich/StateSentiment"
     text += "\n#NLP #Python #ML"
     previous_id = tweet(text, image_path=filename, enable_tweet=True)

@@ -143,7 +143,7 @@ state_query = {
     "District of Columbia" : "Washington DC D C",
     }
 
-def pull_tweets(date, num_tweets=10):
+def pull_tweets(date, num_tweets=10, max_raw_tweets=5000):
     dir = os.path.join("./raw_tweets", date)
 
     if (os.path.exists(dir)):
@@ -151,13 +151,17 @@ def pull_tweets(date, num_tweets=10):
 
     os.makedirs(dir)
 
+    # Keep Total Count
+    tweets_pulled = 0
+
     for state in state_file_list:
         output_file = os.path.join(dir, state_file_list[state])
         if (state == "District of Columbia"):
-            recent_search_query(f"-is:retweet lang:en Washington DC",
-                                output_file=output_file,
-                                place=None,
-                                max_results = num_tweets)
+            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet lang:en Washington DC",
+                                             output_file=output_file,
+                                             place=None,
+                                             max_results = num_tweets,
+                                             max_raw_tweets = max_raw_tweets)
         # elif (state == "Alaska") or (state == "Nebraska") or (state == "Washington") or (state == "Maine") or (state == "New Jersey") or (state == "New York") or (state == "New Mexico") or (state == "Montana") or (state == "New Hampshire") or (state == "Colorado") or (state == "Utah"):
         #     # For these, force entity as results are noisy
         #     recent_search_query(f"-is:retweet lang:en {state_query[state]}",
@@ -165,12 +169,15 @@ def pull_tweets(date, num_tweets=10):
         #                         place=state,
         #                         max_results = num_tweets)
         else:
-            recent_search_query(f"-is:retweet lang:en {state_query[state]}",
+            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet lang:en {state_query[state]}",
                                 output_file=output_file,
                                 place=state,
                                 max_results = num_tweets)
 
-    return dir
+        tweets_pulled += total_tweet_count
+
+
+    return dir, tweets_pulled
 
 
 def read_tweets(filename):
@@ -419,7 +426,7 @@ def create_word_clouds(date):
         tweet_text = " ".join(tweets)
 
         for i in range(int(len(tweets) / 60)):
-            tweet_text += "Copyright_Grant_Hadlich_2021 the "
+            tweet_text += "Copyright_Grant_Hadlich_2022 the "
 
         tweets_total += " " + tweet_text
 
