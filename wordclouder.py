@@ -34,19 +34,19 @@ if __name__ == "__main__":
     now = datetime.now()-timedelta(days=1)
     date = now.strftime("%Y-%m-%d")
 
-    states = create_word_clouds(date)
+    states, tweet_count = create_word_clouds(date)
 
     usa_img = states["USA"]
     del states["USA"]
 
-    text = f"Each week I pull ~51000 tweets on US State mentions. Here's a collection of word clouds from tweets pulled on {date}. Each state + DC can be found in the replies!"
+    text = f"This week I pulled {tweet_count} tweets on US State mentions. Here's the word cloud for #USA from tweets pulled on {date}! Each state + DC can be found in the replies!"
     text += f"\n#Python #USA #WordCloud #TwitterData"
 
     previous_id = tweet(text, image_path=usa_img, enable_tweet=True)
 
     for state in tqdm(states, total=len(states), position=0, leave=True):
         clipped = state.replace(" ", "")
-        text = f"Each week I pull ~51000 tweets on US State mentions. Here's the word cloud for #{clipped} from tweets pulled on {date}!"
+        text = f"This week I pulled {tweet_count} tweets on US State mentions. Here's the word cloud for #{clipped} from tweets pulled on {date}!"
         text += f"\n#Python #WordCloud #TwitterData"
         previous_id = tweet(text, image_path=states[state], in_reply_to_status_id=previous_id, enable_tweet=True)
         sleep(1)

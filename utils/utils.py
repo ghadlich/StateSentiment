@@ -241,7 +241,7 @@ def parse_tweets(model, dir):
 
             if (prediction == "Positive"):
                 positive += 1
-            else:
+            elif (prediction == "Negative"):
                 negative += 1
 
         # Calculate Positive Percentage
@@ -378,6 +378,7 @@ def create_word_clouds(date):
 
     # Cycle Through Each State
     print("Creating a word cloud for each state")
+    tweet_count = 0
     for state in tqdm(state_image_list, total=len(state_image_list), position=0, leave=True):
         tweets = read_tweets(dir + "/" + state_file_list[state])
         img_path = f"./state_images/{state_image_list[state]}"
@@ -398,6 +399,7 @@ def create_word_clouds(date):
                 tweets_cleaned.append(tweet)
 
         tweets = tweets_cleaned
+        tweet_count += len(tweets)
 
         for i in range(len(tweets)):
             tweets[i] = tweets[i]['text']
@@ -440,4 +442,4 @@ def create_word_clouds(date):
 
     create_image(tweets_total, img_path, word_cloud_path, date, max_words=500)
 
-    return state_word_cloud
+    return state_word_cloud, tweet_count
