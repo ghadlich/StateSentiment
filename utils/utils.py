@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# Copyright (c) 2021 Grant Hadlich
+# Copyright (c) 2022 Grant Hadlich
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -108,36 +108,36 @@ state_query = {
     "Kansas" : "Kansas -city",
     "Kentucky" : "Kentucky",
     "Louisiana" : "Louisiana",
-    "Maine" : "Maine -suna -kya -bola -socha -kuch -kalse -dekhna -mainedcm -NewsBreak",
+    "Maine" : "Maine -mainedcm -NewsBreak",
     "Maryland" : "Maryland",
     "Massachusetts" : "Massachusetts",
     "Michigan" : "Michigan",
     "Minnesota" : "Minnesota",
     "Mississippi" : "Mississippi",
     "Missouri" : "Missouri",
-    "Montana" : "Montana -Hannah -La -Fouts -French",
+    "Montana" : "Montana -Hannah -La -Fouts -French -Joe",
     "Nebraska" : "Nebraska",
     "Nevada" : "Nevada -Radio -Music -Download",
-    "New Hampshire" : "\"New Hampshire\"",
-    "New Jersey" : "\"New Jersey\"",
-    "New Mexico" : "\"New Mexico\"",
+    "New Hampshire" : "\"New Hampshire\" -jobs",
+    "New Jersey" : "\"New Jersey\"  -jobs",
+    "New Mexico" : "\"New Mexico\" -jobs",
     "New York" : "\"New York\" State -jobs",
-    "North Carolina" : "North Carolina",
-    "North Dakota" : "North Dakota -jobs",
+    "North Carolina" : "\"North Carolina\" -jobs",
+    "North Dakota" : "\"North Dakota\" -jobs",
     "Ohio" : "Ohio",
     "Oklahoma" : "Oklahoma",
     "Oregon" : "Oregon -pdx911",
     "Pennsylvania" : "Pennsylvania",
-    "Rhode Island" : "Rhode Island",
-    "South Carolina" : "South Carolina",
-    "South Dakota" : "South Dakota",
+    "Rhode Island" : "\"Rhode Island\" -jobs",
+    "South Carolina" : "\"South Carolina\" -jobs",
+    "South Dakota" : "\"South Dakota\" -jobs",
     "Tennessee" : "Tennessee",
     "Texas" : "Texas",
     "Utah" : "Utah",
     "Vermont" : "Vermont",
     "Virginia" : "Virginia -West -ZeE",
     "Washington" : "Washington State -DC -George -Post -Nationals -Capitol -Examiner",
-    "West Virginia" : "West Virginia",
+    "West Virginia" : "\"West Virginia\" -jobs",
     "Wisconsin" : "Wisconsin",
     "Wyoming" : "Wyoming",
     "District of Columbia" : "Washington DC D C",
@@ -147,7 +147,8 @@ def pull_tweets(date, num_tweets=10, max_raw_tweets=5000):
     dir = os.path.join("./raw_tweets", date)
 
     if (os.path.exists(dir)):
-        return dir
+        print(f"Tweets Already Pulled! Location: {dir}")
+        return dir, None
 
     os.makedirs(dir)
 
@@ -157,7 +158,7 @@ def pull_tweets(date, num_tweets=10, max_raw_tweets=5000):
     for state in state_file_list:
         output_file = os.path.join(dir, state_file_list[state])
         if (state == "District of Columbia"):
-            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet lang:en Washington DC",
+            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet filter:has_engagement lang:en Washington DC",
                                              output_file=output_file,
                                              place=None,
                                              max_results = num_tweets,
@@ -169,7 +170,7 @@ def pull_tweets(date, num_tweets=10, max_raw_tweets=5000):
         #                         place=state,
         #                         max_results = num_tweets)
         else:
-            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet lang:en {state_query[state]}",
+            tweet_count, total_tweet_count = recent_search_query(f"-is:retweet filter:has_engagement lang:en {state_query[state]}",
                                 output_file=output_file,
                                 place=state,
                                 max_results = num_tweets)
@@ -219,6 +220,9 @@ def parse_tweets(model, dir):
         # Remove Links
         tweets = [re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\(\),]|'\
                     '(?:%[0-9a-fA-F][0-9a-fA-F]))+','', tweet) for tweet in tweets]
+
+        # Remove Long Lengths (Things like &lt; can blow up models due to length)
+        tweets = [tweet[:min(len(tweet), 512)] for tweet in tweets]
 
         # Need to put this state first due to things like West Virgina
         states_list = [state]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# Copyright (c) 2021 Grant Hadlich
+# Copyright (c) 2022 Grant Hadlich
 #
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,13 +34,18 @@ from collections import defaultdict
 if __name__ == "__main__":
     now = datetime.now()
     date = now.strftime("%Y-%m-%d")
+    tweets_per_state = 4000
 
     print("Loading Models")
     models = get_models()
     print("Loaded Models: " + str([model.name() for model in models]))
 
     print("Pulling Tweets from Twitter")
-    directory, tweets_pulled = pull_tweets(date, 4000)
+    directory, tweets_pulled = pull_tweets(date, tweets_per_state)
+
+    # If tweets pulled can't be determined, just assign a number
+    if tweets_pulled == None:
+        tweets_pulled = tweets_per_state*51
 
     model_data = dict()
     model_tweet_content = dict()
